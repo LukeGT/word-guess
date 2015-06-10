@@ -48,6 +48,8 @@ def load_words():
 
 def main():
 
+    print "Think of a word..."
+
     words = load_words()
     questions = 0
 
