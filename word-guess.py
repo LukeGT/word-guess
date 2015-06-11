@@ -23,12 +23,13 @@ def humanify(n):
 
     suffix = "th"
 
-    if n % 10 == 1:
-        suffix = "st"
-    elif n % 10 == 2:
-        suffix = "nd"
-    elif n % 10 == 3:
-        suffix = "rd"
+    if n/10 != 1:
+        if n % 10 == 1:
+            suffix = "st"
+        elif n % 10 == 2:
+            suffix = "nd"
+        elif n % 10 == 3:
+            suffix = "rd"
 
     return "%d%s" % (n, suffix)
 
