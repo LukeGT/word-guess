@@ -4,6 +4,35 @@ import re
 
 DICTIONARY = '/usr/share/dict/words'
 PLAIN_WORD = re.compile('^[a-zA-Z]+$')
+PROCESS_LIMIT = 75000
+LETTERS = [
+    'R',
+    'A',
+    'I',
+    'S',
+    'N',
+    'T',
+    'O',
+    'L',
+    'E',
+    'C',
+    'D',
+    'U',
+    'G',
+    'P',
+    'M',
+    'H',
+    'B',
+    'Y',
+    'F',
+    'V',
+    'W',
+    'K',
+    'Z',
+    'X',
+    'Q',
+    'J',
+]
 
 def n_or_more_letters(string, n):
     return len(string) >= n
@@ -12,12 +41,10 @@ def contains_letter(string, letter):
     return string.find(letter) >= 0
 
 def nth_letter(string, n, letter):
-
-    if n >= len(string) or n < -len(string):
-        return False
-
-    else:
+    try:
         return string[n] == letter
+    except:
+        return False
 
 def humanify(n):
 
@@ -49,16 +76,21 @@ def load_words():
 
 def main():
 
-    print "Think of a word..."
-
     words = load_words()
     questions = 0
+
+    print "Think of a word..."
 
     while len(words) > 1:
 
         word_num = float(len(words))
-        word_min_len = min(len(word) for word in words)
-        word_max_len = max(len(word) for word in words)
+        word_min_len = 1e9
+        word_max_len = 0
+
+        for word in words:
+            word_len = len(word)
+            if word_len < word_min_len: word_min_len = word_len
+            if word_len > word_max_len: word_max_len = word_len
 
         smallest = {
             'distance': 1e9,
@@ -77,25 +109,42 @@ def main():
                 smallest['method'] = method
                 smallest['arguments'] = args
 
-        # n_or_more_letters
-        for n in range(word_min_len + 1, word_max_len + 1):
+            return percentage
 
-            test(n_or_more_letters, n)
+        process_count = 0
 
-        # contains_letter
-        for letter_num in range(0, 26):
+        contains_letter
+        for letter in LETTERS:
+            if process_count > PROCESS_LIMIT: break
 
-            letter = chr(letter_num + ord('A'))
             test(contains_letter, letter)
+            process_count += len(words)
 
-        if word_max_len * 26 * len(words) < 1000000:
+        # n_or_more_letters
+        min_search = word_min_len
+        max_search = word_max_len
 
-            # nth_letter
-            for n in range(0, word_max_len):
-                for letter_num in range(0, 26):
+        while min_search < max_search:
+            if process_count > PROCESS_LIMIT: break
 
-                    letter = chr(letter_num + ord('A'))
-                    test(nth_letter, n, letter)
+            mid_search = (min_search + max_search)/2
+
+            if test(n_or_more_letters, mid_search) > 0.5:
+                min_search = mid_search + 1
+            else:
+                max_search = mid_search
+
+            process_count += len(words)
+
+        # nth_letter
+        for n in range(0, word_max_len):
+            if process_count > PROCESS_LIMIT: break
+
+            for letter in LETTERS:
+                if process_count > PROCESS_LIMIT: break
+
+                test(nth_letter, n, letter)
+                process_count += len(words)
 
         questions += 1
         question = None
